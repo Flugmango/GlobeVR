@@ -12,5 +12,4 @@
 - Open project folder in Unity
 - Add Texture to sphere (drag 'n drop)
     - Set DEM as normal map
-- Set stars as skybox
 - Run
