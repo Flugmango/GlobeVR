@@ -13,3 +13,11 @@
 - Add Texture to sphere (drag 'n drop)
     - Set DEM as normal map
 - Run
+
+## Dependencies
+Make sure to install the following free Frameworks from the Unity Asset Store:
+
+- SteamVR
+- VRTK by [theStoneFox](https://github.com/thestonefox/VRTK)
+
+Tested on HTC Vive only.
