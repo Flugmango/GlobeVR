@@ -32,3 +32,5 @@ sysinfo.txt
 # Added by Nico to keep the repo size down
 /Assets/SteamVR
 /Assets/Stagit
+/Assets/VRTK
+/Assets/world.topo.200412.3x21600x10800.png
