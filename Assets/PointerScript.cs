@@ -2,6 +2,8 @@
 namespace VRTK
 {
     using UnityEngine;
+    using System.Collections;
+
 
     /// <summary>
     /// The Simple Pointer emits a coloured beam from the end of the controller to simulate a laser beam. It can be useful for pointing to objects within a scene and it can also determine the object it is pointing at and the distance the object is from the controller the beam is being emitted from.
@@ -33,6 +35,10 @@ namespace VRTK
         private Vector3 pointerTipScale = new Vector3(0.02f, 0.02f, 0.02f);
         // material of customPointerCursor (if defined)
         private Material customPointerMaterial;
+
+        // New class variables
+
+        private float sphereRadius;
 
         protected override void OnEnable()
         {
@@ -66,8 +72,16 @@ namespace VRTK
 
                 if (pointerCollidedWith.collider != null && 
                     pointerCollidedWith.collider.name == "Globe") {
+
+                    sphereRadius = transform.GetComponent<SphereCollider>().radius;
+
                     Debug.Log(pointerCollidedWith.point);
+
+                    // Call API function from here
+                    getDataFor(pointerCollidedWith.point);
+                    
                 }
+
 
                 var pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
                 SetPointerTransform(pointerBeamLength, pointerThickness);
@@ -203,5 +217,43 @@ namespace VRTK
 
             return actualLength;
         }
+
+        // Added by Nico Steffens (@nstef), GlobeVR
+        private void getDataFor(Vector3 hitPoint)
+        {
+            // First we convert our hitPoint to Latitude and Longitude
+
+            Vector2 loc = vector2LatLng(hitPoint);
+            Debug.Log("loc-> "+loc);
+            // Then we contact the API to receive the data
+            string url = "http://httpbin.org/ip";
+            WWW www = new WWW(url);
+            StartCoroutine(WaitForRequest(www));
+
+            
+        }
+
+        private Vector2 vector2LatLng(Vector3 point) {
+            float lat = Mathf.Acos(point.y / sphereRadius);
+            float lng = Mathf.Atan(point.x / point.z);
+            return new Vector2(lat, lng);
+        }
+
+        IEnumerator WaitForRequest(WWW www)
+        {
+            yield return www;
+
+            // check for errors
+            if (www.error == null)
+            {
+                Debug.Log("WWW Ok!: " + www.data);
+            }
+            else
+            {
+                Debug.Log("WWW Error: " + www.error);
+            }
+        }
+        
     }
+    
 }
