@@ -38,7 +38,7 @@ namespace VRTK
 
         // New class variables
 
-        private float sphereRadius;
+        private static float sphereRadius;
 
         protected override void OnEnable()
         {
@@ -246,7 +246,7 @@ namespace VRTK
             // check for errors
             if (www.error == null)
             {
-                Debug.Log("WWW Ok!: " + www.data);
+                Debug.Log("WWW Ok!: " + www.text);
             }
             else
             {
