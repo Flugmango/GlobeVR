@@ -123,9 +123,24 @@ public class TestCameraScript : MonoBehaviour {
     {
         float radius = Mathf.Sqrt(Mathf.Pow(point.x, 2) + Mathf.Pow(point.y, 2) + Mathf.Pow(point.z, 2));
 
+        Debug.Log(point);
+
         Debug.Log(radius);
-        float lat = Mathf.Acos(point.y / radius);
-        float lng = Mathf.Atan(point.x / point.z);
+        //        float lat = Mathf.Acos(point.y / radius);
+        //        float lng = Mathf.Atan(point.z / point.x);
+
+        //calc longitude
+        float lng = Mathf.Atan2(point.x, point.z);
+
+        //atan2 does the magic
+        float lat = Mathf.Atan2(-point.y, radius);
+
+        //convert to deg
+        lat *= Mathf.Rad2Deg;
+        lng *= Mathf.Rad2Deg;
+
+        lat *= -1;
+        lng *= -1;
 
         Debug.Log("lat->" + lat + " lng->" + lng);
         return new Vector2(lat, lng);
