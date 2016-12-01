@@ -73,7 +73,9 @@ namespace VRTK
                 if (pointerCollidedWith.collider != null && 
                     pointerCollidedWith.collider.name == "Globe") {
 
-                    sphereRadius = transform.GetComponent<SphereCollider>().radius;
+                    Debug.Log("Globe Hit!");
+
+                    sphereRadius = pointerCollidedWith.transform.GetComponent<SphereCollider>().radius;
 
                     Debug.Log(pointerCollidedWith.point);
 
@@ -228,14 +230,28 @@ namespace VRTK
             // Then we contact the API to receive the data
             string url = "http://httpbin.org/ip";
             WWW www = new WWW(url);
-            StartCoroutine(WaitForRequest(www));
+            //StartCoroutine(WaitForRequest(www));
 
             
         }
 
         private Vector2 vector2LatLng(Vector3 point) {
-            float lat = Mathf.Acos(point.y / sphereRadius);
-            float lng = Mathf.Atan(point.x / point.z);
+            float radius = Mathf.Sqrt(Mathf.Pow(point.x, 2) + Mathf.Pow(point.y, 2) + Mathf.Pow(point.z, 2));
+
+            //calc longitude
+            float lng = Mathf.Atan2(point.x, point.z);
+
+            //atan2 does the magic
+            float lat = Mathf.Atan2(-point.y, radius);
+
+            //convert to deg
+            lat *= Mathf.Rad2Deg;
+            lng *= Mathf.Rad2Deg;
+
+            lat *= -1;
+            lng *= -1;
+
+            Debug.Log("lat->" + lat + " lng->" + lng);
             return new Vector2(lat, lng);
         }
 
