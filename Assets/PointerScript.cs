@@ -38,7 +38,12 @@ namespace VRTK
 
         // New class variables
 
-        private static float sphereRadius;
+        // Hard coded map texture widt and height in pixel
+        private int map_height = 10800;
+        private int map_width = 21600;
+
+        //Might be deleted in the future
+        //private static float sphereRadius;
 
         protected override void OnEnable()
         {
@@ -75,12 +80,24 @@ namespace VRTK
 
                     Debug.Log("Globe Hit!");
 
-                    sphereRadius = pointerCollidedWith.transform.GetComponent<SphereCollider>().radius;
+                    //sphereRadius = pointerCollidedWith.transform.GetComponent<MeshCollider>().radius;
+
 
                     Debug.Log(pointerCollidedWith.point);
+                    Debug.Log(pointerCollidedWith.textureCoord.x);
+                    Debug.Log(pointerCollidedWith.textureCoord.y);
+
+                    // needs to be an integer, so lets use one
+                    float x = pointerCollidedWith.textureCoord.x * map_width;
+                    float y = pointerCollidedWith.textureCoord.y * map_height;
+
+                    float lat = (y / (map_height / 180) - 90);
+                    float lng = x / (map_width / 360) - 180;
+
+                    Debug.Log("lat ->" + lat + " ;lng ->" + lng);
 
                     // Call API function from here
-                    getDataFor(pointerCollidedWith.point);
+                    //getDataFor(pointerCollidedWith.point);
                     
                 }
 
