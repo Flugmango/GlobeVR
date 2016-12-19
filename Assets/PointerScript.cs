@@ -125,6 +125,7 @@ namespace VRTK
 
             if (customPointerCursor == null)
             {
+                // Tip of the laser pointer --> Create an object here that is inheriting the VRTK_Interact Grab Class
                 pointerTip = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                 pointerTip.transform.localScale = pointerTipScale;
             }
