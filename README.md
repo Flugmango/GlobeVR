@@ -4,7 +4,7 @@
 
 ## Installation
 - Clone this repository
-- Download Earth Texture [here](http://eoimages.gsfc.nasa.gov/images/imagerecords/74000/74518/world.topo.200412.3x21600x10800.png)
+- Download edited Earth Texture with borders [here](https://uni-muenster.sciebo.de/index.php/s/GMBXBPg0HfgnuSe) (Source: [NASA Blue Marble](http://visibleearth.nasa.gov/view_cat.php?categoryID=1484))
 - Download Earth DEM [here](http://naturalearth.springercarto.com/ne3_data/dem_large.zip) and extract .zip folder
 - Download & stars only skybox [here](https://www.assetstore.unity3d.com/en/#!/content/53752) and add it to your project
 - Move texture and DEM to projects Assets folder
