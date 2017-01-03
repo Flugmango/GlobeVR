@@ -42,8 +42,8 @@ namespace VRTK
         private int map_height = 10800;
         private int map_width = 21600;
 
-        //Might be deleted in the future
-        //private static float sphereRadius;
+        private bool isGripPressed = false;
+
 
         protected override void OnEnable()
         {
@@ -76,18 +76,10 @@ namespace VRTK
                 // Print the X,Y,Z Coordinate if the globe has been hit
 
                 if (pointerCollidedWith.collider != null && 
-                    pointerCollidedWith.collider.name == "Globe") {
+                    pointerCollidedWith.collider.gameObject.tag == "Globe") {
 
                     Debug.Log("Globe Hit!");
 
-                    //sphereRadius = pointerCollidedWith.transform.GetComponent<MeshCollider>().radius;
-
-
-                    Debug.Log(pointerCollidedWith.point);
-                    Debug.Log(pointerCollidedWith.textureCoord.x);
-                    Debug.Log(pointerCollidedWith.textureCoord.y);
-
-                    // needs to be an integer, so lets use one
                     float x = pointerCollidedWith.textureCoord.x * map_width;
                     float y = pointerCollidedWith.textureCoord.y * map_height;
 
@@ -98,9 +90,28 @@ namespace VRTK
 
                     // Call API function from here
                     //getDataFor(pointerCollidedWith.point);
-                    
-                }
 
+                    // Grabbing Implementation
+
+                    // Add listeners for the Grip button
+                    GetComponent<VRTK_ControllerEvents>().TriggerPressed += new ControllerInteractionEventHandler(GrabInit);
+                    GetComponent<VRTK_ControllerEvents>().TriggerReleased += new ControllerInteractionEventHandler(GrabDeinit);
+                    if (isGripPressed)
+                    {
+
+                        pointerCollidedWith.collider.gameObject.transform.parent = transform;
+                        pointerCollidedWith.collider.gameObject.transform.position = transform.position - transform.forward;
+
+                    }
+                    else
+                    {
+
+                        Debug.Log("Something went horribly wrong...");
+
+                    }
+
+
+                }
 
                 var pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
                 SetPointerTransform(pointerBeamLength, pointerThickness);
@@ -253,24 +264,18 @@ namespace VRTK
             
         }
 
-        private Vector2 vector2LatLng(Vector3 point) {
-            float radius = Mathf.Sqrt(Mathf.Pow(point.x, 2) + Mathf.Pow(point.y, 2) + Mathf.Pow(point.z, 2));
+        private void grabInit()
+        {
 
-            //calc longitude
-            float lng = Mathf.Atan2(point.x, point.z);
+            isGripPressed = true;
+            Debug.Log("Grip Pressed!");
+        }
 
-            //atan2 does the magic
-            float lat = Mathf.Atan2(-point.y, radius);
+        private void grabDeinit()
+        {
+            isGripPressed = false;
+            Debug.Log("Grip Released");
 
-            //convert to deg
-            lat *= Mathf.Rad2Deg;
-            lng *= Mathf.Rad2Deg;
-
-            lat *= -1;
-            lng *= -1;
-
-            Debug.Log("lat->" + lat + " lng->" + lng);
-            return new Vector2(lat, lng);
         }
 
         IEnumerator WaitForRequest(WWW www)
