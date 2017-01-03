@@ -38,11 +38,23 @@ namespace VRTK
 
         // New class variables
 
-        // Hard coded map texture widt and height in pixel
+        private GameObject Globe;
+
+        // Hard coded map texture width and height in pixel
         private int map_height = 10800;
         private int map_width = 21600;
 
+
         private bool isGripPressed = false;
+        private Vector3 latest_tip_position;
+
+
+
+        Quaternion currentRotation;
+
+
+        // Add listeners for the Grip button
+
 
 
         protected override void OnEnable()
@@ -60,9 +72,17 @@ namespace VRTK
             }
         }
 
-        protected override void Update()
+        protected void Start() {
+
+            Globe = GameObject.Find("Globe");
+            GetComponent<VRTK_ControllerEvents>().TriggerPressed += new ControllerInteractionEventHandler(grabInit);
+            GetComponent<VRTK_ControllerEvents>().TriggerReleased += new ControllerInteractionEventHandler(grabDeinit);
+
+        }
+
+        protected void FixedUpdate()
         {
-            base.Update();
+            //base.Update();
             if (pointer.gameObject.activeSelf)
             {
                 Ray pointerRaycast = new Ray(transform.position, transform.forward);
@@ -75,10 +95,11 @@ namespace VRTK
 
                 // Print the X,Y,Z Coordinate if the globe has been hit
 
-                if (pointerCollidedWith.collider != null && 
-                    pointerCollidedWith.collider.gameObject.tag == "Globe") {
+                if (pointerCollidedWith.collider != null &&
+                    pointerCollidedWith.collider.gameObject.tag == "Globe")
+                {
 
-                    Debug.Log("Globe Hit!");
+                    //Debug.Log("Globe Hit!");
 
                     float x = pointerCollidedWith.textureCoord.x * map_width;
                     float y = pointerCollidedWith.textureCoord.y * map_height;
@@ -86,27 +107,35 @@ namespace VRTK
                     float lat = (y / (map_height / 180) - 90);
                     float lng = x / (map_width / 360) - 180;
 
-                    Debug.Log("lat ->" + lat + " ;lng ->" + lng);
+                    //Debug.Log("lat ->" + lat + " ;lng ->" + lng);
 
                     // Call API function from here
                     //getDataFor(pointerCollidedWith.point);
 
                     // Grabbing Implementation
 
-                    // Add listeners for the Grip button
-                    GetComponent<VRTK_ControllerEvents>().TriggerPressed += new ControllerInteractionEventHandler(GrabInit);
-                    GetComponent<VRTK_ControllerEvents>().TriggerReleased += new ControllerInteractionEventHandler(GrabDeinit);
+
                     if (isGripPressed)
                     {
+                        //Debug.Log("transform_euler-> " + pointerCollidedWith.collider.gameObject.transform.eulerAngles);
+                        //Debug.Log("transform_localeuler-> " + pointerCollidedWith.collider.gameObject.transform.localEulerAngles);
 
-                        pointerCollidedWith.collider.gameObject.transform.parent = transform;
-                        pointerCollidedWith.collider.gameObject.transform.position = transform.position - transform.forward;
+                        //Debug.Log(latest_tip_postition);
+
+                        Quaternion newRotation = Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
+
+                        Globe.transform.rotation = newRotation;
+                        
+                        //latest_tip_position = pointerTip.transform.position;
+
+                        //pointerCollidedWith.collider.gameObject.transform.parent = transform;
+                        //pointerCollidedWith.collider.gameObject.transform.position = transform.position - transform.forward;
 
                     }
                     else
                     {
-
-                        Debug.Log("Something went horribly wrong...");
+                        //pointerCollidedWith.collider.gameObject.transform.rotation = currentRotation;
+                        //Debug.Log("Something went horribly wrong...");
 
                     }
 
@@ -116,6 +145,12 @@ namespace VRTK
                 var pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
                 SetPointerTransform(pointerBeamLength, pointerThickness);
             }
+        }
+
+        protected override void Update() {
+
+            base.Update();
+
         }
 
         protected override void InitPointer()
@@ -254,28 +289,36 @@ namespace VRTK
         {
             // First we convert our hitPoint to Latitude and Longitude
 
-            Vector2 loc = vector2LatLng(hitPoint);
-            Debug.Log("loc-> "+loc);
+            //Vector2 loc = vector2LatLng(hitPoint);
+            //Debug.Log("loc-> "+loc);
             // Then we contact the API to receive the data
             string url = "http://httpbin.org/ip";
             WWW www = new WWW(url);
             //StartCoroutine(WaitForRequest(www));
 
-            
+
         }
 
-        private void grabInit()
+        private void grabInit(object sender, ControllerInteractionEventArgs e)
         {
 
-            isGripPressed = true;
-            Debug.Log("Grip Pressed!");
+            latest_tip_position = pointerTip.transform.position;
+            if (!isGripPressed)
+            {
+
+                isGripPressed = true;
+                Debug.Log("Grip Pressed!");
+            }
         }
 
-        private void grabDeinit()
+        private void grabDeinit(object sender, ControllerInteractionEventArgs e)
         {
-            isGripPressed = false;
-            Debug.Log("Grip Released");
-
+            latest_tip_position = pointerTip.transform.position;
+            if (isGripPressed)
+            {
+                isGripPressed = false;
+                Debug.Log("Grip Released");
+            }
         }
 
         IEnumerator WaitForRequest(WWW www)
@@ -292,7 +335,8 @@ namespace VRTK
                 Debug.Log("WWW Error: " + www.error);
             }
         }
-        
+
+
     }
-    
+
 }
