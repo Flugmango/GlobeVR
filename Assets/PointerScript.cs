@@ -49,10 +49,6 @@ namespace VRTK
         private Vector3 latest_tip_position;
 
 
-
-        Quaternion currentRotation;
-
-
         // Add listeners for the Grip button
 
 
@@ -117,27 +113,21 @@ namespace VRTK
 
                     if (isGripPressed)
                     {
-                        //Debug.Log("transform_euler-> " + pointerCollidedWith.collider.gameObject.transform.eulerAngles);
-                        //Debug.Log("transform_localeuler-> " + pointerCollidedWith.collider.gameObject.transform.localEulerAngles);
+                        Quaternion oldRotation = Globe.transform.rotation;
 
-                        //Debug.Log(latest_tip_postition);
+                       Globe.transform.rotation = oldRotation * Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
 
-                        Quaternion newRotation = Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
+                        //Globe.transform.rotation = Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
 
-                        Globe.transform.rotation = newRotation;
-                        
-                        //latest_tip_position = pointerTip.transform.position;
-
-                        //pointerCollidedWith.collider.gameObject.transform.parent = transform;
-                        //pointerCollidedWith.collider.gameObject.transform.position = transform.position - transform.forward;
 
                     }
                     else
                     {
-                        //pointerCollidedWith.collider.gameObject.transform.rotation = currentRotation;
-                        //Debug.Log("Something went horribly wrong...");
+                        
 
                     }
+
+                    latest_tip_position = pointerTip.transform.position;
 
 
                 }
@@ -302,7 +292,7 @@ namespace VRTK
         private void grabInit(object sender, ControllerInteractionEventArgs e)
         {
 
-            latest_tip_position = pointerTip.transform.position;
+            //latest_tip_position = pointerTip.transform.position;
             if (!isGripPressed)
             {
 
@@ -313,7 +303,6 @@ namespace VRTK
 
         private void grabDeinit(object sender, ControllerInteractionEventArgs e)
         {
-            latest_tip_position = pointerTip.transform.position;
             if (isGripPressed)
             {
                 isGripPressed = false;
