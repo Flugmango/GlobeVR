@@ -1,331 +1,327 @@
-﻿// Simple Pointer|Scripts|0040
-namespace VRTK
-{
-    using UnityEngine;
-    using System.Collections;
+﻿
+using System.Collections;
+using System.Collections.Generic;
+using VRTK;
+using UnityEngine;
 
 
-    /// <summary>
-    /// The Simple Pointer emits a coloured beam from the end of the controller to simulate a laser beam. It can be useful for pointing to objects within a scene and it can also determine the object it is pointing at and the distance the object is from the controller the beam is being emitted from.
-    /// </summary>
-    /// <remarks>
-    /// The laser beam is activated by default by pressing the `Touchpad` on the controller. The event it is listening for is the `AliasPointer` events so the pointer toggle button can be set by changing the `Pointer Toggle` button on the `VRTK_ControllerEvents` script parameters.
-    ///
-    /// The Simple Pointer script can be attached to a Controller object within the `[CameraRig]` prefab and the Controller object also requires the `VRTK_ControllerEvents` script to be attached as it uses this for listening to the controller button events for enabling and disabling the beam. It is also possible to attach the Simple Pointer script to another object (like the `[CameraRig]/Camera (head)`) to enable other objects to project the beam. The controller parameter must be entered with the desired controller to toggle the beam if this is the case.
-    /// </remarks>
-    /// <example>
-    /// `VRTK/Examples/003_Controller_SimplePointer` shows the simple pointer in action and code examples of how the events are utilised and listened to can be viewed in the script `VRTK/Examples/Resources/Scripts/VRTK_ControllerPointerEvents_ListenerExample.cs`
-    /// </example>
-    public class PointerScript : VRTK_WorldPointer
+public class PointerScript : VRTK_BasePointer {
+
+    // The globe itself, initialised in the Start() method
+    private GameObject Globe;
+
+    // Hard coded map texture width and height in pixel
+    private int map_height = 10800;
+    private int map_width = 21600;
+
+    // Variables for grabbing implementation
+    private bool isGripPressed = false;
+    private Vector3 latest_tip_position;
+
+    // Variables for canvas creation
+    private int EXISTING_CANVAS_COUNT = 0;
+
+    [Header("Simple Pointer Settings", order = 3)]
+
+    [Tooltip("The thickness and length of the beam can also be set on the script as well as the ability to toggle the sphere beam tip that is displayed at the end of the beam (to represent a cursor).")]
+    public float pointerThickness = 0.002f;
+    [Tooltip("The distance the beam will project before stopping.")]
+    public float pointerLength = 100f;
+    [Tooltip("Toggle whether the cursor is shown on the end of the pointer beam.")]
+    public bool showPointerTip = true;
+    [Header("Custom Appearance Settings", order = 4)]
+    [Tooltip("A custom Game Object can be applied here to use instead of the default sphere for the pointer cursor.")]
+    public GameObject customPointerCursor;
+    [Tooltip("Rotate the pointer cursor to match the normal of the target surface (or the pointer direction if no target was hit).")]
+    public bool pointerCursorMatchTargetNormal = false;
+    [Tooltip("Rescale the pointer cursor proportionally to the distance from this game object (useful when used as a gaze pointer).")]
+    public bool pointerCursorRescaledAlongDistance = true;
+
+    private GameObject pointerHolder;
+    private GameObject pointerBeam;
+    private GameObject pointerTip;
+    private Vector3 pointerTipScale = new Vector3(0.05f, 0.05f, 0.05f);
+    private Vector3 pointerCursorOriginalScale = Vector3.one;
+    private bool activeEnabled;
+    private bool storedBeamState;
+    private bool storedTipState;
+
+    protected override void OnEnable()
     {
-        [Tooltip("The thickness and length of the beam can also be set on the script as well as the ability to toggle the sphere beam tip that is displayed at the end of the beam (to represent a cursor).")]
-        public float pointerThickness = 0.002f;
-        [Tooltip("The distance the beam will project before stopping.")]
-        public float pointerLength = 100f;
-        [Tooltip("Toggle whether the cursor is shown on the end of the pointer beam.")]
-        public bool showPointerTip = true;
-        [Tooltip("A custom Game Object can be applied here to use instead of the default sphere for the pointer cursor.")]
-        public GameObject customPointerCursor;
-        [Tooltip("The layers to ignore when raycasting.")]
-        public LayerMask layersToIgnore = Physics.IgnoreRaycastLayer;
+        base.OnEnable();
+        InitPointer();
+    }
 
-        private GameObject pointerHolder;
-        private GameObject pointer;
-        private GameObject pointerTip;
-        private Vector3 pointerTipScale = new Vector3(0.02f, 0.02f, 0.02f);
-        // material of customPointerCursor (if defined)
-        private Material customPointerMaterial;
-
-        // New class variables
-
-        private GameObject Globe;
-
-        // Hard coded map texture width and height in pixel
-        private int map_height = 10800;
-        private int map_width = 21600;
-
-
-        private bool isGripPressed = false;
-        private Vector3 latest_tip_position;
-
-
-        // Add listeners for the Grip button
-
-
-
-        protected override void OnEnable()
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        if (pointerHolder != null)
         {
-            base.OnEnable();
-            InitPointer();
+            Destroy(pointerHolder);
         }
+    }
 
-        protected override void OnDisable()
+    protected override void Start()
+    {
+        base.Start();
+
+        Globe = GameObject.Find("Globe");
+        //GetComponent<VRTK_ControllerEvents>().TriggerPressed += new ControllerInteractionEventHandler(grabInit);
+        //GetComponent<VRTK_ControllerEvents>().TriggerReleased += new ControllerInteractionEventHandler(grabDeinit);
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if (pointerBeam && pointerBeam.activeSelf)
         {
-            base.OnDisable();
-            if (pointerHolder != null)
+            Ray pointerRaycast = new Ray(GetOriginPosition(), GetOriginForward());
+            RaycastHit pointerCollidedWith;
+            var rayHit = Physics.Raycast(pointerRaycast, out pointerCollidedWith, pointerLength, ~layersToIgnore);
+            var pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
+            SetPointerTransform(pointerBeamLength, pointerThickness);
+            if (rayHit)
             {
-                Destroy(pointerHolder);
-            }
-        }
-
-        protected void Start() {
-
-            Globe = GameObject.Find("Globe");
-            GetComponent<VRTK_ControllerEvents>().TriggerPressed += new ControllerInteractionEventHandler(grabInit);
-            GetComponent<VRTK_ControllerEvents>().TriggerReleased += new ControllerInteractionEventHandler(grabDeinit);
-
-        }
-
-        protected void FixedUpdate()
-        {
-            //base.Update();
-            if (pointer.gameObject.activeSelf)
-            {
-                Ray pointerRaycast = new Ray(transform.position, transform.forward);
-                RaycastHit pointerCollidedWith;
-                var rayHit = Physics.Raycast(pointerRaycast, out pointerCollidedWith, pointerLength, ~layersToIgnore);
-
-                /*
-                    Added by GlobeVR-Team
-                */
-
-                // Print the X,Y,Z Coordinate if the globe has been hit
-
-                if (pointerCollidedWith.collider != null &&
-                    pointerCollidedWith.collider.gameObject.tag == "Globe")
+                if (pointerCursorMatchTargetNormal)
                 {
+                    pointerTip.transform.forward = -pointerCollidedWith.normal;
+                }
+                if (pointerCursorRescaledAlongDistance)
+                {
+                    float collisionDistance = Vector3.Distance(pointerCollidedWith.point, GetOriginPosition());
+                    pointerTip.transform.localScale = pointerCursorOriginalScale * collisionDistance;
+                }
 
-                    //Debug.Log("Globe Hit!");
+                /*Added by GlobeVR*/
 
-                    float x = pointerCollidedWith.textureCoord.x * map_width;
-                    float y = pointerCollidedWith.textureCoord.y * map_height;
-
-                    float lat = (y / (map_height / 180) - 90);
-                    float lng = x / (map_width / 360) - 180;
-
-                    //Debug.Log("lat ->" + lat + " ;lng ->" + lng);
-
-                    // Call API function from here
-                    //getDataFor(pointerCollidedWith.point);
-
-                    // Grabbing Implementation
-
-
-                    if (isGripPressed)
-                    {
-                        Quaternion oldRotation = Globe.transform.rotation;
-
-                       Globe.transform.rotation = oldRotation * Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
-
-                        //Globe.transform.rotation = Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
-
-
-                    }
-                    else
-                    {
-                        
-
-                    }
-
-                    latest_tip_position = pointerTip.transform.position;
-
+                if(pointerCollidedWith.collider.gameObject == Globe)
+                {
+                    Debug.Log("Globe Hit!");
 
                 }
 
-                var pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
-                SetPointerTransform(pointerBeamLength, pointerThickness);
-            }
-        }
+                if (isGripPressed)
+                {
+                    // Adjust the rotation of the globe while taking the current rotation into consideration (*=)
+                   // Globe.transform.rotation *= Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
+                }
 
-        protected override void Update() {
+                latest_tip_position = pointerTip.transform.position;
 
-            base.Update();
 
-        }
-
-        protected override void InitPointer()
-        {
-            pointerHolder = new GameObject(string.Format("[{0}]WorldPointer_SimplePointer_Holder", gameObject.name));
-            Utilities.SetPlayerObject(pointerHolder, VRTK_PlayerObject.ObjectTypes.Pointer);
-            pointerHolder.transform.parent = transform;
-            pointerHolder.transform.localPosition = Vector3.zero;
-
-            pointer = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            pointer.transform.name = string.Format("[{0}]WorldPointer_SimplePointer_Pointer", gameObject.name);
-            Utilities.SetPlayerObject(pointer, VRTK_PlayerObject.ObjectTypes.Pointer);
-            pointer.transform.parent = pointerHolder.transform;
-
-            pointer.GetComponent<BoxCollider>().isTrigger = true;
-            pointer.AddComponent<Rigidbody>().isKinematic = true;
-            pointer.layer = LayerMask.NameToLayer("Ignore Raycast");
-
-            if (customPointerCursor == null)
-            {
-                // Tip of the laser pointer --> Create an object here that is inheriting the VRTK_Interact Grab Class
-                pointerTip = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                pointerTip.transform.localScale = pointerTipScale;
             }
             else
             {
-                Renderer renderer = customPointerCursor.GetComponentInChildren<MeshRenderer>();
-                if (renderer)
+                if (pointerCursorMatchTargetNormal)
                 {
-                    customPointerMaterial = Instantiate(renderer.sharedMaterial);
+                    pointerTip.transform.forward = GetOriginForward();
                 }
-                pointerTip = Instantiate(customPointerCursor);
-                foreach (Renderer mr in pointerTip.GetComponentsInChildren<Renderer>())
+                if (pointerCursorRescaledAlongDistance)
                 {
-                    mr.material = customPointerMaterial;
+                    pointerTip.transform.localScale = pointerCursorOriginalScale * pointerBeamLength;
                 }
             }
 
-            pointerTip.transform.name = string.Format("[{0}]WorldPointer_SimplePointer_PointerTip", gameObject.name);
-            Utilities.SetPlayerObject(pointerTip, VRTK_PlayerObject.ObjectTypes.Pointer);
-            pointerTip.transform.parent = pointerHolder.transform;
-
-            pointerTip.GetComponent<Collider>().isTrigger = true;
-            pointerTip.AddComponent<Rigidbody>().isKinematic = true;
-            pointerTip.layer = LayerMask.NameToLayer("Ignore Raycast");
-
-            base.InitPointer();
-
-            SetPointerTransform(pointerLength, pointerThickness);
-            TogglePointer(false);
+            if (activeEnabled)
+            {
+                activeEnabled = false;
+                pointerBeam.GetComponentInChildren<Renderer>().enabled = storedBeamState;
+                pointerTip.GetComponentInChildren<Renderer>().enabled = storedTipState;
+            }
         }
+    }
 
-        protected override void SetPointerMaterial()
+    protected override void UpdateObjectInteractor()
+    {
+        base.UpdateObjectInteractor();
+        //if the object interactor is too far from the pointer tip then set it to the pointer tip position to prevent glitching.
+        if (Vector3.Distance(objectInteractor.transform.position, pointerTip.transform.position) > 0)
         {
-            base.SetPointerMaterial();
-            pointer.GetComponent<Renderer>().material = pointerMaterial;
-            if (customPointerMaterial != null)
-            {
-                customPointerMaterial.color = pointerMaterial.color;
-            }
-            else
-            {
-                pointerTip.GetComponent<Renderer>().material = pointerMaterial;
-            }
+            objectInteractor.transform.position = pointerTip.transform.position;
         }
+    }
 
-        protected override void TogglePointer(bool state)
+    protected override void InitPointer()
+    {
+        pointerHolder = new GameObject(string.Format("[{0}]BasePointer_SimplePointer_Holder", gameObject.name));
+        pointerHolder.transform.localPosition = Vector3.zero;
+        VRTK_PlayerObject.SetPlayerObject(pointerHolder, VRTK_PlayerObject.ObjectTypes.Pointer);
+
+        pointerBeam = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        pointerBeam.transform.name = string.Format("[{0}]BasePointer_SimplePointer_Pointer", gameObject.name);
+        pointerBeam.transform.SetParent(pointerHolder.transform);
+        pointerBeam.GetComponent<BoxCollider>().isTrigger = true;
+        pointerBeam.AddComponent<Rigidbody>().isKinematic = true;
+        pointerBeam.layer = LayerMask.NameToLayer("Ignore Raycast");
+
+        var pointerRenderer = pointerBeam.GetComponent<MeshRenderer>();
+        pointerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        pointerRenderer.receiveShadows = false;
+        pointerRenderer.material = pointerMaterial;
+
+        VRTK_PlayerObject.SetPlayerObject(pointerBeam, VRTK_PlayerObject.ObjectTypes.Pointer);
+
+        if (customPointerCursor)
         {
-            state = (pointerVisibility == pointerVisibilityStates.Always_On ? true : state);
-            base.TogglePointer(state);
-            pointer.gameObject.SetActive(state);
-
-            var tipState = (showPointerTip ? state : false);
-            pointerTip.gameObject.SetActive(tipState);
-
-            if (pointer.GetComponent<Renderer>() && pointerVisibility == pointerVisibilityStates.Always_Off)
-            {
-                pointer.GetComponent<Renderer>().enabled = false;
-            }
+            pointerTip = Instantiate(customPointerCursor);
         }
-
-        private void SetPointerTransform(float setLength, float setThicknes)
+        else
         {
-            //if the additional decimal isn't added then the beam position glitches
-            var beamPosition = setLength / (2 + 0.00001f);
+            pointerTip = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            pointerTip.transform.localScale = pointerTipScale;
 
-            pointer.transform.localScale = new Vector3(setThicknes, setThicknes, setLength);
-            pointer.transform.localPosition = new Vector3(0f, 0f, beamPosition);
-            pointerTip.transform.localPosition = new Vector3(0f, 0f, setLength - (pointerTip.transform.localScale.z / 2));
-            pointerHolder.transform.localRotation = Quaternion.identity;
-            base.SetPlayAreaCursorTransform(pointerTip.transform.position);
+            var pointerTipRenderer = pointerTip.GetComponent<MeshRenderer>();
+            pointerTipRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            pointerTipRenderer.receiveShadows = false;
+            pointerTipRenderer.material = pointerMaterial;
         }
 
-        private float GetPointerBeamLength(bool hasRayHit, RaycastHit collidedWith)
+        pointerCursorOriginalScale = pointerTip.transform.localScale;
+        pointerTip.transform.name = string.Format("[{0}]BasePointer_SimplePointer_PointerTip", gameObject.name);
+        pointerTip.transform.SetParent(pointerHolder.transform);
+        pointerTip.GetComponent<Collider>().isTrigger = true;
+        pointerTip.AddComponent<Rigidbody>().isKinematic = true;
+        pointerTip.layer = LayerMask.NameToLayer("Ignore Raycast");
+        VRTK_PlayerObject.SetPlayerObject(pointerTip, VRTK_PlayerObject.ObjectTypes.Pointer);
+
+        base.InitPointer();
+
+        if (showPointerTip && objectInteractor)
         {
-            var actualLength = pointerLength;
-
-            //reset if beam not hitting or hitting new target
-            if (!hasRayHit || (pointerContactTarget && pointerContactTarget != collidedWith.transform))
-            {
-                if (pointerContactTarget != null)
-                {
-                    base.PointerOut();
-                }
-
-                pointerContactDistance = 0f;
-                pointerContactTarget = null;
-                destinationPosition = Vector3.zero;
-
-                UpdatePointerMaterial(pointerMissColor);
-            }
-
-            //check if beam has hit a new target
-            if (hasRayHit)
-            {
-                pointerContactDistance = collidedWith.distance;
-                pointerContactTarget = collidedWith.transform;
-                destinationPosition = pointerTip.transform.position;
-
-                UpdatePointerMaterial(pointerHitColor);
-
-                base.PointerIn();
-            }
-
-            //adjust beam length if something is blocking it
-            if (hasRayHit && pointerContactDistance < pointerLength)
-            {
-                actualLength = pointerContactDistance;
-            }
-
-            return actualLength;
+            objectInteractor.transform.localScale = pointerTip.transform.localScale * 1.05f;
         }
 
-        // Added by Nico Steffens (@nstef), GlobeVR
-        private void getDataFor(Vector3 hitPoint)
+        SetPointerTransform(pointerLength, pointerThickness);
+        TogglePointer(false);
+    }
+
+    protected override void SetPointerMaterial(Color color)
+    {
+        base.SetPointerMaterial(color);
+
+        base.ChangeMaterialColor(pointerBeam, color);
+        base.ChangeMaterialColor(pointerTip, color);
+    }
+
+    protected override void TogglePointer(bool state)
+    {
+        state = (pointerVisibility == pointerVisibilityStates.Always_On ? true : state);
+        base.TogglePointer(state);
+        if (pointerBeam)
         {
-            // First we convert our hitPoint to Latitude and Longitude
-
-            //Vector2 loc = vector2LatLng(hitPoint);
-            //Debug.Log("loc-> "+loc);
-            // Then we contact the API to receive the data
-            string url = "http://httpbin.org/ip";
-            WWW www = new WWW(url);
-            //StartCoroutine(WaitForRequest(www));
-
-
+            pointerBeam.SetActive(state);
         }
 
-        private void grabInit(object sender, ControllerInteractionEventArgs e)
+        var tipState = (showPointerTip ? state : false);
+        if (pointerTip)
+        {
+            pointerTip.SetActive(tipState);
+        }
+
+        if (pointerBeam && pointerBeam.GetComponentInChildren<Renderer>() && pointerVisibility == pointerVisibilityStates.Always_Off)
+        {
+            pointerBeam.GetComponentInChildren<Renderer>().enabled = false;
+        }
+
+        activeEnabled = state;
+
+        if (activeEnabled)
+        {
+            storedBeamState = pointerBeam.GetComponentInChildren<Renderer>().enabled;
+            storedTipState = pointerTip.GetComponentInChildren<Renderer>().enabled;
+
+            pointerBeam.GetComponentInChildren<Renderer>().enabled = false;
+            pointerTip.GetComponentInChildren<Renderer>().enabled = false;
+        }
+    }
+
+    private void SetPointerTransform(float setLength, float setThicknes)
+    {
+        //if the additional decimal isn't added then the beam position glitches
+        var beamPosition = setLength / (2 + 0.00001f);
+
+        pointerBeam.transform.localScale = new Vector3(setThicknes, setThicknes, setLength);
+        pointerBeam.transform.localPosition = new Vector3(0f, 0f, beamPosition);
+        pointerTip.transform.localPosition = new Vector3(0f, 0f, setLength - (pointerTip.transform.localScale.z / 2));
+
+        pointerHolder.transform.position = GetOriginPosition();
+        pointerHolder.transform.rotation = GetOriginRotation();
+        base.UpdateDependencies(pointerTip.transform.position);
+    }
+
+    private float GetPointerBeamLength(bool hasRayHit, RaycastHit collidedWith)
+    {
+        var actualLength = pointerLength;
+
+        //reset if beam not hitting or hitting new collider
+        if (!hasRayHit || (pointerContactRaycastHit.collider && pointerContactRaycastHit.collider != collidedWith.collider))
+        {
+            if (pointerContactRaycastHit.collider != null)
+            {
+                base.PointerOut();
+            }
+
+            pointerContactDistance = 0f;
+            pointerContactTarget = null;
+            pointerContactRaycastHit = new RaycastHit();
+            destinationPosition = Vector3.zero;
+
+            UpdatePointerMaterial(pointerMissColor);
+        }
+
+        //check if beam has hit a new target
+        if (hasRayHit)
+        {
+            pointerContactDistance = collidedWith.distance;
+            pointerContactTarget = collidedWith.transform;
+            pointerContactRaycastHit = collidedWith;
+            destinationPosition = pointerTip.transform.position;
+
+            UpdatePointerMaterial(pointerHitColor);
+
+            base.PointerIn();
+        }
+
+        //adjust beam length if something is blocking it
+        if (hasRayHit && pointerContactDistance < pointerLength)
+        {
+            actualLength = pointerContactDistance;
+        }
+
+        return OverrideBeamLength(actualLength);
+    }
+
+    float[] coord2latlng(float x, float y) {
+
+        // WAS: pointercollidedwith.texturecoord.x
+        float map_x = x * map_width;
+        float map_y = y * map_height;
+
+        float lat = (map_y / (map_height / 180) - 90);
+        float lng = map_x / (map_width / 360) - 180;
+
+        return new float[] { lat, lng };
+    }
+
+    private void grabInit(object sender, ControllerInteractionEventArgs e)
+    {
+
+        //latest_tip_position = pointerTip.transform.position;
+        if (!isGripPressed)
         {
 
-            //latest_tip_position = pointerTip.transform.position;
-            if (!isGripPressed)
-            {
-
-                isGripPressed = true;
-                Debug.Log("Grip Pressed!");
-            }
+            isGripPressed = true;
+            Debug.Log("Grip Pressed!");
         }
+    }
 
-        private void grabDeinit(object sender, ControllerInteractionEventArgs e)
+    private void grabDeinit(object sender, ControllerInteractionEventArgs e)
+    {
+        if (isGripPressed)
         {
-            if (isGripPressed)
-            {
-                isGripPressed = false;
-                Debug.Log("Grip Released");
-            }
+            isGripPressed = false;
+            Debug.Log("Grip Released");
         }
-
-        IEnumerator WaitForRequest(WWW www)
-        {
-            yield return www;
-
-            // check for errors
-            if (www.error == null)
-            {
-                Debug.Log("WWW Ok!: " + www.text);
-            }
-            else
-            {
-                Debug.Log("WWW Error: " + www.error);
-            }
-        }
-
-
     }
 
 }

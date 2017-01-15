@@ -208,7 +208,7 @@ public class TestCameraScript : MonoBehaviour {
         txt.fontSize = 75;
         txt.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
 
-        FindObjectOfType<VRTK_UIPointer>().SetWorldCanvas(canvas);
+        //FindObjectOfType<VRTK_UIPointer>().SetWorldCanvas(canvas);
     }
     public void CreateCanvas()
     {
