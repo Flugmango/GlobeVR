@@ -18,9 +18,6 @@ public class PointerScript : VRTK_BasePointer {
     private bool isGripPressed = false;
     private Vector3 latest_tip_position;
 
-    // Variables for canvas creation
-    private int EXISTING_CANVAS_COUNT = 0;
-
     [Header("Simple Pointer Settings", order = 3)]
 
     [Tooltip("The thickness and length of the beam can also be set on the script as well as the ability to toggle the sphere beam tip that is displayed at the end of the beam (to represent a cursor).")]
