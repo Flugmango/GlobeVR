@@ -43,11 +43,14 @@ public class InteractionHandler : MonoBehaviour {
 
         // Start Request to the backend to receive the image here
 
-        Image canvasImage = getCanvasImage(lat, lng, type);
+        //Image canvasImage = getCanvasImage(lat, lng, type);
+        Sprite canvasImage = Resources.Load<Sprite>("placeholder.jpg");
 
         // Create Canvas Element and display it
 
         var newCanvasGO = new GameObject("InfoScreen Prototype");
+
+        var background = newCanvasGO.AddComponent<Image>();
 
         var canvas = newCanvasGO.AddComponent<Canvas>();
         var canvasRT = canvas.GetComponent<RectTransform>();
@@ -94,6 +97,7 @@ public class InteractionHandler : MonoBehaviour {
     }
 
     private Image getCanvasImage(float lat, float lng, string type) {
+
 
         // Contact Backend here, for now we only scrape data from an example site to grab an image
 
