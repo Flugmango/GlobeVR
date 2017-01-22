@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InteractionHandler : MonoBehaviour {
+public class InteractionHandler : MonoBehaviour
+{
 
     // The maximum number of open canvas elements
     public int maxCanvas = 5;
@@ -17,33 +18,51 @@ public class InteractionHandler : MonoBehaviour {
 
     public int currentCanvasCount;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
 
         // Init infoscreens array
         infoscreens = new VRTK.Infoscreen[maxCanvas];
         currentCanvasCount = 0;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
         // Check some stuff here each frame
 
 
 
-	}
+    }
 
 
     /*
         Member functions by GeoVR Team
     */
 
-    public bool createInfoScreen(float lat, float lng, string type) {
+    //    public VRTK.Infoscreen createInfoScreen(float lat, float lng, string type) {
+    public void createInfoScreen()
+    {
 
-        // Start Request to the backend to receive the image here
+        GameObject newScreen;
+
+        // Init new InfoScreen
+        //VRTK.Infoscreen newScreen = gameObject.AddComponent<VRTK.Infoscreen>();
+
+        newScreen = new GameObject("Infoscreen Prototype");
+
+        VRTK.Infoscreen newInfoScreen = newScreen.AddComponent<VRTK.Infoscreen>();
+
+        newInfoScreen.init(5, 7, "weather");
+
+        this.infoscreens[currentCanvasCount] = newInfoScreen;
+
+
 
         //Image canvasImage = getCanvasImage(lat, lng, type);
+        /*
         Sprite canvasImage = Resources.Load<Sprite>("placeholder.jpg");
 
         // Create Canvas Element and display it
@@ -61,7 +80,7 @@ public class InteractionHandler : MonoBehaviour {
         canvasRT.position = new Vector3(4.5f, 0.5f, 15f);
         canvasRT.sizeDelta = new Vector2(500f, 281f);
 
-
+        */
 
 
         /* Removed since we're displaying a image from the backend here
@@ -93,10 +112,10 @@ public class InteractionHandler : MonoBehaviour {
         */
 
         // Return true when the canvas has been displayed correctly
-        return true;
     }
 
-    private Image getCanvasImage(float lat, float lng, string type) {
+    private Image getCanvasImage(float lat, float lng, string type)
+    {
 
 
         // Contact Backend here, for now we only scrape data from an example site to grab an image

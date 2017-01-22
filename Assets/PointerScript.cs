@@ -70,10 +70,7 @@ public class PointerScript : VRTK_BasePointer {
         GetComponent<VRTK_ControllerEvents>().TriggerPressed += new ControllerInteractionEventHandler(grabInit);
         GetComponent<VRTK_ControllerEvents>().TriggerReleased += new ControllerInteractionEventHandler(grabDeinit);
 
-        GetComponent<VRTK_ControllerEvents>().GripPressed += new ControllerInteractionEventHandler(gripInit);
-        GetComponent<VRTK_ControllerEvents>().GripReleased += new ControllerInteractionEventHandler(gripDeinit);
-
-        ih = new InteractionHandler();
+        ih = GameObject.FindObjectOfType<InteractionHandler>();
     }
 
     protected override void Update()
@@ -102,7 +99,6 @@ public class PointerScript : VRTK_BasePointer {
 
                 if(pointerCollidedWith.collider.gameObject == Globe)
                 {
-                    Debug.Log("Globe Hit!");
 
                 }
 
@@ -110,11 +106,6 @@ public class PointerScript : VRTK_BasePointer {
                 {
                     // Adjust the rotation of the globe while taking the current rotation into consideration (*=)
                    Globe.transform.rotation *= Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
-                }
-
-                if (isTouchPadPressed)
-                {
-                    ih.createInfoScreen(51, 7, "weather");
                 }
 
                 latest_tip_position = pointerTip.transform.position;
@@ -332,27 +323,6 @@ public class PointerScript : VRTK_BasePointer {
         {
             isGripPressed = false;
             Debug.Log("Grip Released");
-        }
-    }
-
-    private void gripInit(object sender, ControllerInteractionEventArgs e)
-    {
-
-        //latest_tip_position = pointerTip.transform.position;
-        if (!isTouchPadPressed)
-        {
-
-            isTouchPadPressed = true;
-            Debug.Log("isTouchPadPressed Pressed!");
-        }
-    }
-
-    private void gripDeinit(object sender, ControllerInteractionEventArgs e)
-    {
-        if (isTouchPadPressed)
-        {
-            isTouchPadPressed = false;
-            Debug.Log("isTouchPadPressed Released");
         }
     }
 
