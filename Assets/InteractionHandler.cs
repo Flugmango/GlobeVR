@@ -55,63 +55,18 @@ public class InteractionHandler : MonoBehaviour
 
         VRTK.Infoscreen newInfoScreen = newScreen.AddComponent<VRTK.Infoscreen>();
 
+
+
+
+        
+
         newInfoScreen.init(5, 7, "weather");
 
         this.infoscreens[currentCanvasCount] = newInfoScreen;
 
+        currentCanvasCount++;
 
-
-        //Image canvasImage = getCanvasImage(lat, lng, type);
-        /*
-        Sprite canvasImage = Resources.Load<Sprite>("placeholder.jpg");
-
-        // Create Canvas Element and display it
-
-        var newCanvasGO = new GameObject("InfoScreen Prototype");
-
-        var background = newCanvasGO.AddComponent<Image>();
-
-        var canvas = newCanvasGO.AddComponent<Canvas>();
-        var canvasRT = canvas.GetComponent<RectTransform>();
-
-        canvasRT.localScale = new Vector3(0.005f, 0.005f, 0.005f);
-        //canvasRT.eulerAngles = new Vector3(0f, 0f, 0f);
-
-        canvasRT.position = new Vector3(4.5f, 0.5f, 15f);
-        canvasRT.sizeDelta = new Vector2(500f, 281f);
-
-        */
-
-
-        /* Removed since we're displaying a image from the backend here
-
-        var background = newCanvasGO.AddComponent<Image>();
-
-        // Set the background to white + transparent
-        background.color = new Color(1f, 1f, 1f, 0.15f);
-
-        var newTextGO = new GameObject("Text");
-        newTextGO.transform.parent = newCanvasGO.transform;
-
-        var textRT = newTextGO.AddComponent<RectTransform>();
-        textRT.position = new Vector3(0f, 0f, 0f);
-        textRT.anchoredPosition = new Vector3(0f, 0f, 0f);
-        textRT.localPosition = new Vector3(0f, 0f, 0f);
-        textRT.sizeDelta = new Vector2(500f, 281f);
-        textRT.localScale = new Vector3(1f, 1f, 1f);
-        textRT.localEulerAngles = new Vector3(0f, 180f, 0f);
-
-        var txt = newTextGO.AddComponent<Text>();
-
-        txt.text = "InfoScreen";
-        txt.color = Color.black;
-
-        txt.fontSize = 40;
-        txt.font = Resources.GetBuiltinResource(typeof(Font), "Arial.ttf") as Font;
-
-        */
-
-        // Return true when the canvas has been displayed correctly
+        
     }
 
     private Image getCanvasImage(float lat, float lng, string type)

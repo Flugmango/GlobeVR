@@ -97,12 +97,7 @@ public class PointerScript : VRTK_BasePointer {
 
                 /*Added by GlobeVR*/
 
-                if(pointerCollidedWith.collider.gameObject == Globe)
-                {
-
-                }
-
-                if (isGripPressed)
+                if (isGripPressed && pointerCollidedWith.collider.gameObject == Globe)
                 {
                     // Adjust the rotation of the globe while taking the current rotation into consideration (*=)
                    Globe.transform.rotation *= Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
@@ -311,9 +306,7 @@ public class PointerScript : VRTK_BasePointer {
         //latest_tip_position = pointerTip.transform.position;
         if (!isGripPressed)
         {
-
             isGripPressed = true;
-            Debug.Log("Grip Pressed!");
         }
     }
 
@@ -322,7 +315,6 @@ public class PointerScript : VRTK_BasePointer {
         if (isGripPressed)
         {
             isGripPressed = false;
-            Debug.Log("Grip Released");
         }
     }
 
