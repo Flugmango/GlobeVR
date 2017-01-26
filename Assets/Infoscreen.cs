@@ -17,6 +17,8 @@
         // Use this for initialization
         void Start()
         {
+            gameObject.AddComponent<VRTK_InteractableObject>();
+            gameObject.GetComponent<VRTK_InteractableObject>().isGrabbable = true;
         }
 
         // Update is called once per frame

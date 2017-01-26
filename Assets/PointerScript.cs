@@ -45,8 +45,8 @@ public class PointerScript : VRTK_BasePointer {
     private bool storedBeamState;
     private bool storedTipState;
 
-    private float lastLat = 0;
-    private float lastLng = 0;
+    private static float lastLat = 0;
+    private static float lastLng = 0;
 
     private InteractionHandler ih;
 
@@ -308,9 +308,9 @@ public class PointerScript : VRTK_BasePointer {
     }
 
      //@return float[] { lat, lng }
-    public float[] getLastCoords()
+    public static float[] getLastCoords()
     {
-        return new float[] { this.lastLat, this.lastLng };
+        return new float[] { lastLat, lastLng };
     }
 
     private void grabInit(object sender, ControllerInteractionEventArgs e)

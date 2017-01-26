@@ -57,8 +57,9 @@ public class InteractionHandler : MonoBehaviour
     public void createInfoScreen(string type) {
 
         // get last coords of pointerscript
-        float[] coords = this.GetComponent<PointerScript>().getLastCoords();
-
+        
+        //float[] coords = GameObject.FindGameObjectWithTag("rightController").GetComponent<PointerScript>().getLastCoords();
+        float[] coords = PointerScript.getLastCoords();
         GameObject newScreen;
 
         // Init new InfoScreen
