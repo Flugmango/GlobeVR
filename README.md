@@ -21,3 +21,8 @@ Make sure to install the following free Frameworks from the Unity Asset Store:
 - VRTK by [theStoneFox](https://github.com/thestonefox/VRTK)
 
 Tested on HTC Vive only.
+
+### Icons
+Temperature Icon designed by Pixel Buddha from Flaticon
+Population Icon designed by Freepik from Flaticon
+Flag Icon designed by  Madebyolive from Flaticon
