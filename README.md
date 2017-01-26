@@ -23,6 +23,6 @@ Make sure to install the following free Frameworks from the Unity Asset Store:
 Tested on HTC Vive only.
 
 ### Icons
-Temperature Icon designed by Pixel Buddha from Flaticon
-Population Icon designed by Freepik from Flaticon
-Flag Icon designed by  Madebyolive from Flaticon
+- Temperature Icon designed by Pixel Buddha from Flaticon
+- Population Icon designed by Freepik from Flaticon
+- Flag Icon designed by  Madebyolive from Flaticon
