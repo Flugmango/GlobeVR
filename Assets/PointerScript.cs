@@ -45,6 +45,9 @@ public class PointerScript : VRTK_BasePointer {
     private bool storedBeamState;
     private bool storedTipState;
 
+    private float lastLat = 0;
+    private float lastLng = 0;
+
     private InteractionHandler ih;
 
     protected override void OnEnable()
@@ -85,6 +88,7 @@ public class PointerScript : VRTK_BasePointer {
             SetPointerTransform(pointerBeamLength, pointerThickness);
             if (rayHit)
             {
+                coord2latlng(pointerCollidedWith.textureCoord.x, pointerCollidedWith.textureCoord.y);
                 if (pointerCursorMatchTargetNormal)
                 {
                     pointerTip.transform.forward = -pointerCollidedWith.normal;
@@ -297,7 +301,16 @@ public class PointerScript : VRTK_BasePointer {
         float lat = (map_y / (map_height / 180) - 90);
         float lng = map_x / (map_width / 360) - 180;
 
+        lastLat = lat;
+        lastLng = lng;
+
         return new float[] { lat, lng };
+    }
+
+     //@return float[] { lat, lng }
+    public float[] getLastCoords()
+    {
+        return new float[] { this.lastLat, this.lastLng };
     }
 
     private void grabInit(object sender, ControllerInteractionEventArgs e)

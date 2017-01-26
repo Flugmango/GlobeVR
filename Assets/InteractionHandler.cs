@@ -45,16 +45,19 @@ public class InteractionHandler : MonoBehaviour
     // entry points for radial menu
     public void showTemperatureData()
     {
-        this.createInfoScreen(51, 7, "weather");
+        this.createInfoScreen("weather");
     }
 
     public void showPopulationData()
     {
-        this.createInfoScreen(51, 7, "population");
+        this.createInfoScreen("population");
     }
 
 
-    public void createInfoScreen(float lat, float lng, string type) {
+    public void createInfoScreen(string type) {
+
+        // get last coords of pointerscript
+        float[] coords = this.GetComponent<PointerScript>().getLastCoords();
 
         GameObject newScreen;
 
@@ -65,52 +68,11 @@ public class InteractionHandler : MonoBehaviour
 
         VRTK.Infoscreen newInfoScreen = newScreen.AddComponent<VRTK.Infoscreen>();
 
-        newInfoScreen.init(lat, lng, type);
+        newInfoScreen.init(coords[0], coords[1], type);
 
         this.infoscreens[currentCanvasCount] = newInfoScreen;
 
         currentCanvasCount++;
 
     }
-    
-
-    private Image getCanvasImage(float lat, float lng, string type)
-    {
-
-
-        // Contact Backend here, for now we only scrape data from an example site to grab an image
-
-        string url = string.Format("https://placekitten.com/g/{0}/{1}", canvas_width, canvas_height);
-
-        //string url = "https://placekitten.com/g/500/281";
-        WWW www = new WWW(url);
-        StartCoroutine(GetImage(www));
-
-        Debug.Log("get Canvas");
-        Debug.Log(www);
-
-        // TODO: Try to access the data here and
-
-
-        return null;
-    }
-
-    IEnumerator GetImage(WWW www)
-    {
-        yield return www;
-
-        Debug.Log("get Image");
-        Debug.Log(www.texture);
-
-        // check for errors
-        if (www.error == null)
-        {
-            Debug.Log("WWW Ok!: " + www.text);
-        }
-        else
-        {
-            Debug.Log("WWW Error: " + www.error);
-        }
-    }
-
 }
