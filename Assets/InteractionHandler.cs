@@ -42,9 +42,19 @@ public class InteractionHandler : MonoBehaviour
         Member functions by GeoVR Team
     */
 
-    //    public VRTK.Infoscreen createInfoScreen(float lat, float lng, string type) {
-    public void createInfoScreen()
+    // entry points for radial menu
+    public void showTemperatureData()
     {
+        this.createInfoScreen(51, 7, "weather");
+    }
+
+    public void showPopulationData()
+    {
+        this.createInfoScreen(51, 7, "population");
+    }
+
+
+    public void createInfoScreen(float lat, float lng, string type) {
 
         GameObject newScreen;
 
@@ -55,19 +65,14 @@ public class InteractionHandler : MonoBehaviour
 
         VRTK.Infoscreen newInfoScreen = newScreen.AddComponent<VRTK.Infoscreen>();
 
-
-
-
-        
-
-        newInfoScreen.init(5, 7, "weather");
+        newInfoScreen.init(lat, lng, type);
 
         this.infoscreens[currentCanvasCount] = newInfoScreen;
 
         currentCanvasCount++;
 
-        
     }
+    
 
     private Image getCanvasImage(float lat, float lng, string type)
     {
