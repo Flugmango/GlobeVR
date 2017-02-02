@@ -26,3 +26,5 @@ Tested on HTC Vive only.
 - Temperature Icon designed by Pixel Buddha from Flaticon
 - Population Icon designed by Freepik from Flaticon
 - Flag Icon designed by  Madebyolive from Flaticon
+- Weather Icons designed by Madebyoliver from Flaticon and modified by GlobeVR
+- Exit Icon designed by Freepic from Flaticon by GlobeVR
