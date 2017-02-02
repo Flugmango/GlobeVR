@@ -27,4 +27,4 @@ Tested on HTC Vive only.
 - Population Icon designed by Freepik from Flaticon
 - Flag Icon designed by  Madebyolive from Flaticon
 - Weather Icons designed by Madebyoliver from Flaticon and modified by GlobeVR
-- Exit Icon designed by Freepic from Flaticon by GlobeVR
+- Exit Icon designed by Freepic from Flaticon and modified by GlobeVR
