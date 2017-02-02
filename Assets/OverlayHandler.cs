@@ -28,7 +28,7 @@ public class OverlayHandler : MonoBehaviour {
     {
 
         Texture2D tex;
-        tex = new Texture2D(4, 4, TextureFormat.DXT1, false);
+        tex = new Texture2D(128, 256, TextureFormat.DXT1, false);
         yield return www;
         www.LoadImageIntoTexture(tex);
         //GetComponent<Renderer>().material.mainTexture = tex;
