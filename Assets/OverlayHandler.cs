@@ -18,13 +18,32 @@ public class OverlayHandler : MonoBehaviour {
     // @param type type of overlay, "none" for no overlay (removing the actual one)
     public void addOverlay(string type)
     {
-        //string url = "http://localhost:3000/overlay/" + type;
-        string url = "file:///C:/Users/sitcomlab/Desktop/GlobeVR/Assets/temp_reproj.png";
-        
-        WWW www = new WWW(url);
-        Debug.Log(www);
-        StartCoroutine(loadImage(www));
-       
+        if (type == "none")
+        {
+            GameObject globe = GameObject.FindGameObjectWithTag("Globe");
+            Renderer globeRenderer = globe.GetComponent<Renderer>();
+            Material globeMaterial = globeRenderer.material;
+            globeMaterial.EnableKeyword("_EMISSION");
+            // set no texture, does it work?
+            globeMaterial.SetTexture("_DetailAlbedoMap", null); // maxbe change to other map: http://answers.unity3d.com/questions/914923/standard-shader-emission-control-via-script.html
+        }
+        else
+        {
+            string url = "";
+            if (type == "clouds")
+            {
+                // use local file for clouds
+                url = "file:///C:/Users/sitcomlab/Desktop/GlobeVR/Assets/clouds_reproj.png";
+            }
+            else
+            {
+                // get image von globeVR backend
+                url = "giv-project12:3000/overlay/" + type;
+            }
+            WWW www = new WWW(url);
+            Debug.Log(www);
+            StartCoroutine(loadImage(www));
+        }
     }
 
     IEnumerator loadImage(WWW www)
