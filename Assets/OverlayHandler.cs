@@ -6,12 +6,12 @@ public class OverlayHandler : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		
+
 	}
 
     // adds Overlay to Globe
@@ -41,9 +41,6 @@ public class OverlayHandler : MonoBehaviour {
                 // get image von globeVR backend
                 Debug.Log(type);
                 url = "http://giv-project12:3000/overlay/" + type;
-
-                GameObject legend = GameObject.FindGameObjectWithTag("Legend");
-                //legend.
             }
 
             Debug.Log(url);
@@ -51,6 +48,8 @@ public class OverlayHandler : MonoBehaviour {
             Debug.Log(www.error);
             StartCoroutine(loadImage(www));
         }
+
+        this.addLegend(type);
     }
 
     IEnumerator loadImage(WWW www)
@@ -59,7 +58,7 @@ public class OverlayHandler : MonoBehaviour {
 
         Texture2D tex;
         tex = new Texture2D(128, 256);
-        
+
         www.LoadImageIntoTexture(tex);
         //GetComponent<Renderer>().material.mainTexture = tex;
         Debug.Log(tex);
@@ -74,5 +73,37 @@ public class OverlayHandler : MonoBehaviour {
         globeMaterial.SetTexture("_EmissionMap", tex);
 
         globeMaterial.SetColor("_EmissionColor", new Color(0.75f,0.75f,0.75f));
+    }
+
+    void addLegend(type) {
+      GameObject legend = GameObject.FindGameObjectWithTag("Legend");
+      RectTransform canvasRectTransform; = legend.GetComponent<RectTransform>();
+
+      Image background = legend.AddComponent<Image>();
+      // Set the background to white + transparent
+      background.color = new Color(1f, 1f, 1f, 0.75f);
+
+      // Display Loading Image:
+      //TODO: delete image
+      switch(type) {
+        case "temp":
+          background.sprite = Resources.Load<Sprite>("temp_legend");
+          break;
+        case "wind":
+          background.sprite = Resources.Load<Sprite>("wind_legend");
+          break;
+        case "precipitation":
+          background.sprite = Resources.Load<Sprite>("precipitation_legend");
+          break;
+        case "pressure":
+          background.sprite = Resources.Load<Sprite>("pressure_legend");
+          break;
+      }
+      this.canvasRectTransform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+      if(type == "precipitation") {
+        this.canvasRectTransform.sizeDelta = new Vector2(500f, 281f);
+      } else {
+        this.canvasRectTransform.sizeDelta = new Vector2(500f, 281f);
+      }
     }
 }
