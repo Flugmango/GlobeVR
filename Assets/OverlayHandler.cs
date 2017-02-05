@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class OverlayHandler : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
 	}
 
@@ -75,11 +76,11 @@ public class OverlayHandler : MonoBehaviour {
         globeMaterial.SetColor("_EmissionColor", new Color(0.75f,0.75f,0.75f));
     }
 
-    void addLegend(type) {
+    void addLegend(string type) {
       GameObject legend = GameObject.FindGameObjectWithTag("Legend");
-      RectTransform canvasRectTransform; = legend.GetComponent<RectTransform>();
+      RectTransform canvasRectTransform = legend.GetComponent<RectTransform>();
 
-      Image background = legend.AddComponent<Image>();
+      var background = legend.AddComponent<Image>();
       // Set the background to white + transparent
       background.color = new Color(1f, 1f, 1f, 0.75f);
 
@@ -99,11 +100,11 @@ public class OverlayHandler : MonoBehaviour {
           background.sprite = Resources.Load<Sprite>("pressure_legend");
           break;
       }
-      this.canvasRectTransform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+      //canvasRectTransform.localScale = new Vector3(0.025f, 0.025f, 0.005f);
       if(type == "precipitation") {
-        this.canvasRectTransform.sizeDelta = new Vector2(500f, 281f);
+        canvasRectTransform.sizeDelta = new Vector2(10f, 2f);
       } else {
-        this.canvasRectTransform.sizeDelta = new Vector2(500f, 281f);
+        canvasRectTransform.sizeDelta = new Vector2(10f, 2f);
       }
     }
 }
