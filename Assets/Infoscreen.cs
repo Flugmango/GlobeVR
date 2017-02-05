@@ -24,7 +24,11 @@
         // Update is called once per frame
         void Update()
         {
-            this.canvasRectTransform.LookAt(Camera.main.transform.position);
+            //this.canvasRectTransform.LookAt(Camera.main.transform.position);
+
+            this.canvasRectTransform.transform.rotation = Quaternion.LookRotation(this.canvasRectTransform.position - Camera.main.transform.position);
+
+            //Quaternion.LookRotation(transform.position - target.position);
 
         }
 
@@ -39,13 +43,13 @@
 
             this.background = gameObject.AddComponent<Image>();
             // Set the background to white + transparent
-            background.color = new Color(1f, 1f, 1f, 0.15f);
+            background.color = new Color(1f, 1f, 1f, 0.75f);
 
             // Display Loading Image:
             background.sprite = Resources.Load<Sprite>("placeholder");
 
             // Set size of the canvas
-            this.canvasRectTransform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+            this.canvasRectTransform.localScale = new Vector3(0.005f, 0.005f, 0.005f);     
             this.canvasRectTransform.sizeDelta = new Vector2(500f, 281f);
 
             // This places the infoscreen just in front to the user. TODO: Switch case to differentiate between several positions
@@ -61,8 +65,8 @@
 
 
             // REPLACE WITH BACKEND URL!!!!
-            //string url = string.Format("https://placekitten.com/g/{0}/{1}", this.canvasRectTransform.sizeDelta.x, this.canvasRectTransform.sizeDelta.y);
-            string url = string.Format("http://lorempixel.com/{0}/{1}", this.canvasRectTransform.sizeDelta.x, this.canvasRectTransform.sizeDelta.y);
+            string url = string.Format("http://giv-project12:3000/getData/{0}/{1}/{2}", lat, lng, type);
+            //string url = string.Format("http://lorempixel.com/{0}/{1}", this.canvasRectTransform.sizeDelta.x, this.canvasRectTransform.sizeDelta.y);
 
 
 

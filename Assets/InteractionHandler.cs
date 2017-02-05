@@ -45,7 +45,7 @@ public class InteractionHandler : MonoBehaviour
     // entry points for radial menu
     public void showTemperatureData()
     {
-        this.createInfoScreen("weather");
+        this.createInfoScreen("temperature");
     }
 
     public void showPopulationData()
@@ -64,6 +64,17 @@ public class InteractionHandler : MonoBehaviour
 
         // Init new InfoScreen
         //VRTK.Infoscreen newScreen = gameObject.AddComponent<VRTK.Infoscreen>();
+
+
+        switch (type) {
+
+            case "weather":
+                
+
+
+                break;
+
+        }
 
         newScreen = new GameObject("Infoscreen Prototype");
 

@@ -25,7 +25,8 @@ public class OverlayHandler : MonoBehaviour {
             Material globeMaterial = globeRenderer.material;
             globeMaterial.EnableKeyword("_EMISSION");
             // set no texture, does it work?
-            globeMaterial.SetTexture("_DetailAlbedoMap", null); // maxbe change to other map: http://answers.unity3d.com/questions/914923/standard-shader-emission-control-via-script.html
+            globeMaterial.SetTexture("_EmissionMap", null); // maxbe change to other map: http://answers.unity3d.com/questions/914923/standard-shader-emission-control-via-script.html
+            globeMaterial.SetColor("_EmissionColor", new Color(0f, 0f, 0f));
         }
         else
         {
@@ -38,20 +39,27 @@ public class OverlayHandler : MonoBehaviour {
             else
             {
                 // get image von globeVR backend
-                url = "giv-project12:3000/overlay/" + type;
+                Debug.Log(type);
+                url = "http://giv-project12:3000/overlay/" + type;
+
+                GameObject legend = GameObject.FindGameObjectWithTag("Legend");
+                //legend.
             }
+
+            Debug.Log(url);
             WWW www = new WWW(url);
-            Debug.Log(www);
+            Debug.Log(www.error);
             StartCoroutine(loadImage(www));
         }
     }
 
     IEnumerator loadImage(WWW www)
     {
-        
-        Texture2D tex;
-        tex = new Texture2D(128, 256, TextureFormat.DXT1, false);
         yield return www;
+
+        Texture2D tex;
+        tex = new Texture2D(128, 256);
+        
         www.LoadImageIntoTexture(tex);
         //GetComponent<Renderer>().material.mainTexture = tex;
         Debug.Log(tex);
@@ -62,6 +70,9 @@ public class OverlayHandler : MonoBehaviour {
         Material globeMaterial = globeRenderer.material;
         globeMaterial.EnableKeyword("_EMISSION");
         // http://answers.unity3d.com/questions/914923/standard-shader-emission-control-via-script.html
-        globeMaterial.SetTexture("_DetailAlbedoMap", tex);
+        // globeMaterial.SetTexture("_DetailAlbedoMap", tex);
+        globeMaterial.SetTexture("_EmissionMap", tex);
+
+        globeMaterial.SetColor("_EmissionColor", new Color(0.75f,0.75f,0.75f));
     }
 }
