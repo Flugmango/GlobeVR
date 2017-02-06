@@ -3,17 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OverlayHandler : MonoBehaviour {
+public class OverlayHandler : MonoBehaviour
+{
+
+    // Legend Items
+
+    Sprite tempLegend;
+    Sprite precipitationLegend;
+    Sprite pressureLegend;
+    Sprite windLegend;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
 
-	}
+        windLegend = Resources.Load<Sprite>("wind_legend");
+        pressureLegend = Resources.Load<Sprite>("pressure_legend");
+        precipitationLegend = Resources.Load<Sprite>("precipitation_legend");
+        tempLegend = Resources.Load<Sprite>("temp_legend");
 
-	// Update is called once per frame
-	void Update () {
+    }
 
-	}
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     // adds Overlay to Globe
     // @param type type of overlay, "none" for no overlay (removing the actual one)
@@ -73,38 +88,51 @@ public class OverlayHandler : MonoBehaviour {
         // globeMaterial.SetTexture("_DetailAlbedoMap", tex);
         globeMaterial.SetTexture("_EmissionMap", tex);
 
-        globeMaterial.SetColor("_EmissionColor", new Color(0.75f,0.75f,0.75f));
+        globeMaterial.SetColor("_EmissionColor", new Color(0.75f, 0.75f, 0.75f));
     }
 
-    void addLegend(string type) {
-      GameObject legend = GameObject.FindGameObjectWithTag("Legend");
-      RectTransform canvasRectTransform = legend.GetComponent<RectTransform>();
+    void addLegend(string type)
+    {
+        GameObject legend = GameObject.FindGameObjectWithTag("Legend");
+        RectTransform canvasRectTransform = legend.GetComponent<RectTransform>();
 
-      var background = legend.AddComponent<Image>();
-      // Set the background to white + transparent
-      background.color = new Color(1f, 1f, 1f, 0.75f);
+        SpriteRenderer background = legend.GetComponent<SpriteRenderer>();
 
-      // Display Loading Image:
-      //TODO: delete image
-      switch(type) {
-        case "temp":
-          background.sprite = Resources.Load<Sprite>("temp_legend");
-          break;
-        case "wind":
-          background.sprite = Resources.Load<Sprite>("wind_legend");
-          break;
-        case "precipitation":
-          background.sprite = Resources.Load<Sprite>("precipitation_legend");
-          break;
-        case "pressure":
-          background.sprite = Resources.Load<Sprite>("pressure_legend");
-          break;
-      }
-      //canvasRectTransform.localScale = new Vector3(0.025f, 0.025f, 0.005f);
-      if(type == "precipitation") {
-        canvasRectTransform.sizeDelta = new Vector2(10f, 2f);
-      } else {
-        canvasRectTransform.sizeDelta = new Vector2(10f, 2f);
-      }
+        Debug.Log(background);
+        // Set the background to white + transparent
+        //background.color = new Color(1f, 1f, 1f, 0.75f);
+
+        // Display Loading Image:
+        //TODO: delete image
+        switch (type)
+        {
+            case "temp":
+                background.sprite = tempLegend;
+                break;
+            case "wind":
+                background.sprite = windLegend;
+                break;
+            case "precipitation":
+                background.sprite = precipitationLegend;
+                break;
+            case "pressure":
+                background.sprite = pressureLegend;
+                break;
+            case "none":
+                background.sprite = null;
+                break;
+            case "clouds":
+                background.sprite = null;
+                break;
+        }
+        //canvasRectTransform.localScale = new Vector3(0.025f, 0.025f, 0.005f);
+        if (type == "precipitation")
+        {
+            canvasRectTransform.sizeDelta = new Vector2(10f, 2f);
+        }
+        else
+        {
+            canvasRectTransform.sizeDelta = new Vector2(10f, 1f);
+        }
     }
 }
