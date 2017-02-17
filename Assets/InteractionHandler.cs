@@ -10,7 +10,7 @@ public class InteractionHandler : MonoBehaviour
     public int maxCanvas = 5;
 
     // A public array containing the created infoscreens
-    public VRTK.Infoscreen[] infoscreens;
+    public ArrayList infoscreens;
 
     // Canvas Size Params
     public int canvas_width = 500;
@@ -23,7 +23,7 @@ public class InteractionHandler : MonoBehaviour
     {
 
         // Init infoscreens array
-        infoscreens = new VRTK.Infoscreen[maxCanvas];
+        infoscreens = new ArrayList();
         currentCanvasCount = 0;
     }
 
@@ -53,6 +53,15 @@ public class InteractionHandler : MonoBehaviour
         this.createInfoScreen("population");
     }
 
+    public void deleteAllScreens()
+    {
+        foreach(VRTK.Infoscreen infoScreen in infoscreens)
+        {
+            VRTK.Infoscreen.Destroy(infoScreen.gameObject);
+        }
+        this.infoscreens.Clear();
+    }
+
 
     public void createInfoScreen(string type) {
 
@@ -66,15 +75,6 @@ public class InteractionHandler : MonoBehaviour
         //VRTK.Infoscreen newScreen = gameObject.AddComponent<VRTK.Infoscreen>();
 
 
-        switch (type) {
-
-            case "weather":
-                
-
-
-                break;
-
-        }
 
         newScreen = new GameObject("Infoscreen Prototype");
 
@@ -82,7 +82,7 @@ public class InteractionHandler : MonoBehaviour
 
         newInfoScreen.init(coords[0], coords[1], type);
 
-        this.infoscreens[currentCanvasCount] = newInfoScreen;
+        this.infoscreens.Add(newInfoScreen);
 
         currentCanvasCount++;
 
