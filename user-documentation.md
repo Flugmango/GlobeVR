@@ -1,6 +1,6 @@
 # User Documentation
 ## Installation
-Run GlobeVR.exe and enjoy the virtual earth. Make sure SteamVR is running and the HMD is recognized correctly.
+Download the GlobeVR.exe [here](https://github.com/Flugmango/GlobeVR/releases) and run it to enjoy the virtual earth. Make sure SteamVR is running and the HMD is recognized correctly.
 
 ## Usage
 ### Left controller
