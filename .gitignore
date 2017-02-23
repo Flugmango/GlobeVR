@@ -35,3 +35,6 @@ sysinfo.txt
 /Assets/VRTK
 /Assets/world.topo.200412.3x21600x10800.png
 /Assets/texture_with_borders.png
+
+.DS_Store
+**/.DS_Store

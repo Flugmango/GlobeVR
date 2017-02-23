@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*
+  This class creates the info screens and manages them
+ */
 public class InteractionHandler : MonoBehaviour
 {
 
@@ -32,9 +35,6 @@ public class InteractionHandler : MonoBehaviour
     {
 
         // Check some stuff here each frame
-
-
-
     }
 
 
@@ -53,6 +53,7 @@ public class InteractionHandler : MonoBehaviour
         this.createInfoScreen("population");
     }
 
+    // this methods deletes all infoscreens from the scene
     public void deleteAllScreens()
     {
         foreach(VRTK.Infoscreen infoScreen in infoscreens)
@@ -63,10 +64,13 @@ public class InteractionHandler : MonoBehaviour
     }
 
 
+    /*
+      createInfoScreen creates a new info screen
+      <param name="type">type of info screen</param>
+    */
     public void createInfoScreen(string type) {
 
         // get last coords of pointerscript
-        
         //float[] coords = GameObject.FindGameObjectWithTag("rightController").GetComponent<PointerScript>().getLastCoords();
         float[] coords = PointerScript.getLastCoords();
         GameObject newScreen;
@@ -80,8 +84,10 @@ public class InteractionHandler : MonoBehaviour
 
         VRTK.Infoscreen newInfoScreen = newScreen.AddComponent<VRTK.Infoscreen>();
 
+        // initialize infoscreen with gicen coords and parameter
         newInfoScreen.init(coords[0], coords[1], type);
 
+        // add info screen to arraylist
         this.infoscreens.Add(newInfoScreen);
 
         currentCanvasCount++;

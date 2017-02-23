@@ -4,6 +4,7 @@ using VRTK;
 using UnityEngine.UI;
 
 
+// class only for test purposes, not used anymore
 public class TestCameraScript : MonoBehaviour {
 
     public Camera camera;
@@ -21,11 +22,11 @@ public class TestCameraScript : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
-      
+
     }
 
 
-	
+
 	// Update is called once per frame
 	void Update () {
 

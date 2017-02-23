@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/*
+  This class adds overlays to the globe
+ */
 public class OverlayHandler : MonoBehaviour
 {
 
     // Legend Items
-
     Sprite tempLegend;
     Sprite precipitationLegend;
     Sprite pressureLegend;
@@ -80,6 +82,7 @@ public class OverlayHandler : MonoBehaviour
         Debug.Log(tex);
 
 
+        // set the texture as emission map to the globe
         GameObject globe = GameObject.FindGameObjectWithTag("Globe");
         Renderer globeRenderer = globe.GetComponent<Renderer>();
         Material globeMaterial = globeRenderer.material;
@@ -91,6 +94,7 @@ public class OverlayHandler : MonoBehaviour
         globeMaterial.SetColor("_EmissionColor", new Color(0.75f, 0.75f, 0.75f));
     }
 
+    // function adds a legend to the controller
     void addLegend(string type)
     {
         GameObject legend = GameObject.FindGameObjectWithTag("Legend");
@@ -126,6 +130,7 @@ public class OverlayHandler : MonoBehaviour
                 break;
         }
         //canvasRectTransform.localScale = new Vector3(0.025f, 0.025f, 0.005f);
+        // precipitation legend is higher than the other legend images
         if (type == "precipitation")
         {
             canvasRectTransform.sizeDelta = new Vector2(10f, 2f);

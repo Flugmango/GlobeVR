@@ -100,13 +100,14 @@ public class PointerScript : VRTK_BasePointer {
                 }
 
                 /*Added by GlobeVR*/
-
+                // when laser beam pointing at earth and trigger is pressed, rotate the earth
                 if (isGripPressed && pointerCollidedWith.collider.gameObject == Globe)
                 {
                     // Adjust the rotation of the globe while taking the current rotation into consideration (*=)
                    Globe.transform.rotation *= Quaternion.FromToRotation(latest_tip_position, pointerTip.transform.position);
                 }
 
+                // save latest position of laser tip
                 latest_tip_position = pointerTip.transform.position;
 
 
@@ -292,6 +293,7 @@ public class PointerScript : VRTK_BasePointer {
         return OverrideBeamLength(actualLength);
     }
 
+    // convert x and y texture coordinates in geographical coordinates
     float[] coord2latlng(float x, float y) {
 
         // WAS: pointercollidedwith.texturecoord.x
@@ -307,6 +309,8 @@ public class PointerScript : VRTK_BasePointer {
         return new float[] { lat, lng };
     }
 
+    // returns the last coordinates
+    // static so that other classes can access this function
      //@return float[] { lat, lng }
     public static float[] getLastCoords()
     {
