@@ -1,7 +1,7 @@
 # GlobeVR
 
 #### Study project GeoVR @ Institute for Geoinformatics, WWU Münster, Germany
-
+As part of the study project a GeoVR application namley GlobeVR 
 ## Installation
 - Clone this repository
 - Download edited Earth Texture with borders [here](https://uni-muenster.sciebo.de/index.php/s/GMBXBPg0HfgnuSe) (Source: [NASA Blue Marble](http://visibleearth.nasa.gov/view_cat.php?categoryID=1484))
