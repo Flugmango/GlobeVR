@@ -3,7 +3,9 @@
 #### Study project GeoVR @ Institute for Geoinformatics, WWU Münster, Germany
 As part of the study project a GeoVR application namely GlobeVR for displaying the different kinds of data(weather, rainfall, Windspeed) on the Globe. [Unity 3D](https://unity3d.com/) was used in order to develop the application. 
 ## Demo
+[![GlobeVR Youtube Demo](http://img.youtube.com/vi/H9xMWOrF_Bg/0.jpg)](http://www.youtube.com/watch?v=H9xMWOrF_Bg)
 
+If you want to get the demo it is available for [download here.](https://github.com/Flugmango/GlobeVR/releases/download/v1.0/GlobeVR.exe)
 ## Documentation
 - [User Docs](user-documentation.md)
 - [Developer Docs](developer-documentation.md)
